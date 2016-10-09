@@ -1,0 +1,5 @@
+include MANIFEST.in
+include README.rst
+include requirements.txt
+recursive-include cas9
+global-exclude *.pyc

@@ -1,0 +1,2 @@
+biopython==1.68
+progressbar2==3.10.0

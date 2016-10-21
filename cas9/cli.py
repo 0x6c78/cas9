@@ -6,6 +6,7 @@
 #
 # Distributed under terms of the MIT License
 from finder import Cas9
+from align import batch_align
 from Bio import SeqIO
 from progressbar import ProgressBar
 
@@ -26,6 +27,16 @@ def find(input_file, out_file, fmt='fasta'):
             pb.update(cnt)
 
 
+def align(candidate_file, bd_file, outfile):
+    candidate_dict = {}
+    with open(candidate_file) as handle:
+        for line in handle:
+            candidate_id, candidate_seq = line.rstrip().split(',')
+            candidate_dict[candidate_id] = candidate_seq
+
+    batch_align(candidate_dict, bd_file, outfile)
+
+
 def main():
     import argparse
 
@@ -33,11 +44,19 @@ def main():
     sub_parser = parser.add_subparsers(title='sub commands', dest='command')
 
     find_parser = sub_parser.add_parser('find', help='find cas9 target site from fasta or genbank file')
+    align_parser = sub_parser.add_parser('align', help='align cas9 target to background database file')
+
     find_parser.add_argument('-i', '--input', help='fasta or genbank file', required=True)
     find_parser.add_argument('-o', '--output', help='where to save the results', required=True)
     find_parser.add_argument('-f', '--format', help='file format', choices=['gb', 'fasta'],
                              default='fasta', required=False)
+
+    align_parser.add_argument('-c', '--candidate', help='candidate file', required=True)
+    align_parser.add_argument('-b', '--bd', help='background database file', required=True)
+    align_parser.add_argument('-o', '--outfile', help='outfile', required=True)
+
     args = parser.parse_args()
     if args.command == 'find':
         find(args.input, args.output, args.format)
-
+    elif args.command == 'align':
+        align(args.candidate, args.bd, args.outfile)
